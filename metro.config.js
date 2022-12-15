@@ -5,6 +5,7 @@ config.resolver.extraNodeModules = {
     stream: require.resolve('readable-stream'),
     http: require.resolve('@tradle/react-native-http'),
     https: require.resolve('https-browserify'),
+    crypto: require.resolve('crypto-browserify'),
     url: require.resolve('url')
 };
 module.exports = config;

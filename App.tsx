@@ -28,6 +28,8 @@ import ThresholdKey from "@tkey/default";
 import WebStorageModule, { WEB_STORAGE_MODULE_NAME } from "@tkey/web-storage";
 import TorusServiceProvider from "@tkey/service-provider-torus";
 import TorusStorageLayer from "@tkey/storage-layer-torus";
+import { UX_MODE } from "@toruslabs/customauth";
+import BN from "bn.js";
 
 const GOOGLE = "google";
 const FACEBOOK = "facebook";
@@ -55,6 +57,7 @@ const directParams = {
   baseUrl: `http://localhost:3000/serviceworker/`,
   enableLogging: true,
   network: "testnet" as any,
+  uxMode: UX_MODE.REDIRECT,
 };
 const serviceProvider = new TorusServiceProvider({ ...directParams, customAuthArgs: directParams });
 const storageLayer = new TorusStorageLayer({ hostUrl: "https://metadata.tor.us" });
@@ -96,7 +99,8 @@ export default function App() {
       try {
         console.log("init in");
         (window.navigator as any).userAgent = 'ReactNative';
-        await (tKey.serviceProvider as TorusServiceProvider).init({ skipInit: true, });
+        // await (tKey.serviceProvider as TorusServiceProvider).init({ skipInit: true, });
+        tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
         console.log("init resolved");
       } catch (error) {
         console.error(error);
@@ -117,21 +121,28 @@ export default function App() {
   }, []);
   const triggerLogin = async () => {
     try {
-      console.log("Triggering Login");
+      console.log("Triggering init");
 
       // 2. Set jwtParameters depending on the verifier (google / facebook / linkedin etc)
-      const jwtParams = loginConnectionMap[authVerifier] || {};
+      // const jwtParams = loginConnectionMap[authVerifier] || {};
 
-      const { typeOfLogin, clientId, verifier } = verifierMap[authVerifier];
+      // const { typeOfLogin, clientId, verifier } = verifierMap[authVerifier];
 
       // 3. Trigger Login ==> opens the popup
-      const loginResponse = await (tKey.serviceProvider as TorusServiceProvider).triggerLogin({
-        typeOfLogin,
-        verifier,
-        clientId,
-        jwtParams,
-      });
-      addLog(JSON.stringify(loginResponse));
+      // const loginResponse = await (tKey.serviceProvider as TorusServiceProvider).triggerLogin({
+      //   typeOfLogin,
+      //   verifier,
+      //   clientId,
+      //   jwtParams,
+      // });
+      try {
+        let key = await tKey.initialize();
+        console.log({key});
+      } catch(err) {
+        console.log({err});
+      }
+
+      // addLog(JSON.stringify(loginResponse));
       // setConsoleText(loginResponse);
     } catch (error) {
       console.log(error);
