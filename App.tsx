@@ -1,42 +1,38 @@
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import "./global";
-
+import {secrets} from "./secret";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
   Platform,
   ScrollView,
   Text,
-  TouchableHighlight,
-  TouchableHighlightProps,
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-// import * as Linking from "expo-linking";
-// import nacl from "tweetnacl";
-// import bs58 from "bs58";
-// import { generateKey } from "crypto";
-import * as crypto from "crypto-js";
-// import * as ec from "eccrypto"
-import * as ec from "@toruslabs/eccrypto";
-//const NETWORK = clusterApiUrl("mainnet-beta");
-// import * as ab from "torusbridge";
-//const buildUrl = (path: string, params: URLSearchParams) =>
-//  `https://solflare.com/ul/${path}?${params.toString()}`;
 import ThresholdKey from "@tkey/default";
-import WebStorageModule, { WEB_STORAGE_MODULE_NAME } from "@tkey/web-storage";
 import TorusServiceProvider from "@tkey/service-provider-torus";
 import TorusStorageLayer from "@tkey/storage-layer-torus";
-import { UX_MODE } from "@toruslabs/customauth";
+import * as ec from "@toruslabs/eccrypto";
+import CustomAuth from '@toruslabs/customauth-react-native-sdk';
+import {getED25519Key} from "@toruslabs/openlogin-ed25519";
 import BN from "bn.js";
+import base58 from "bs58";
+
+
+declare global {
+  interface Window {
+    secrets: any;
+  }
+}
 
 const GOOGLE = "google";
 const FACEBOOK = "facebook";
 const LINKEDIN = "linkedin";
 const TWITTER = "twitter";
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
-
+let shares: any;
 const loginConnectionMap: Record<string, any> = {
   [LINKEDIN]: { domain: AUTH_DOMAIN },
   [TWITTER]: { domain: AUTH_DOMAIN },
@@ -46,7 +42,7 @@ const verifierMap: Record<string, any> = {
   [GOOGLE]: {
     name: "Google",
     typeOfLogin: "google",
-    clientId: "134678854652-vnm7amoq0p23kkpkfviveul9rb26rmgn.apps.googleusercontent.com",
+    clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
     verifier: "web3auth-testnet-verifier",
   },
   [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "617201755556395", verifier: "facebook-lrc" },
@@ -57,7 +53,7 @@ const directParams = {
   baseUrl: `http://localhost:3000/serviceworker/`,
   enableLogging: true,
   network: "testnet" as any,
-  uxMode: UX_MODE.REDIRECT,
+  // uxMode: UX_MODE.REDIRECT,
 };
 const serviceProvider = new TorusServiceProvider({ ...directParams, customAuthArgs: directParams });
 const storageLayer = new TorusStorageLayer({ hostUrl: "https://metadata.tor.us" });
@@ -76,24 +72,13 @@ const tKey = new ThresholdKey({
 export default function App() {
   const [logs, setLogs] = useState<string[]>([]);
   const [authVerifier, setAuthVerifier] = useState<string>("google");
+  const [shareDetails, setShareDetails] = useState<string>("0x0");
+  const [total, setTotal] = useState<number>(3);
+  const [threshold, setThreshold] = useState<number>(2);
 
-  const addLog = useCallback((log: string) => setLogs((logs) => [...logs, "> " + log]), []);
-  let a = ec.generatePrivate();
+  const addLog = useCallback((log: any) => setLogs((logs) => [...logs, "> " + JSON.stringify(log)]), []);
 
   useEffect(() => {
-    // (async () => {
-    //   try {
-    //     // const res = await tKey.generateNewShare();
-    //     // addLog(JSON.stringify(res));
-    //     // console.log(JSON.stringify(res));
-    //     await (tKey.serviceProvider as TorusServiceProvider).init({ skipSw: false });
-    //     console.log("init resolcvced");
-    //   } catch(err) {
-
-    //     console.log("err",err);
-    //     addLog(JSON.stringify(err));
-    //   }
-    // })();
     const init = async () => {
       // Init Service Provider
       try {
@@ -106,48 +91,113 @@ export default function App() {
         console.error(error);
       }
     };
-
     init();
-    // let a =  ec.generatePrivate()
-    // addLog(a.toString());
-    // let abs = ec.encrypt('m message', 'secret key 123').toString();
-    // let a = generatePrivate();
-    // addLog(a.toString());
-    // generateKey('hmac', {length: 64}, (err, result)=> {
-    //   console.log({err}, {result})
-    // });
-    // var ciphertext = crypto.AES.encrypt('m message', 'secret key 123').toString();
-    // addLog(ciphertext);
-  }, []);
-  const triggerLogin = async () => {
     try {
+      console.log({CustomAuth})
+      const result = CustomAuth.init({
+        browserRedirectUri: 'https://scripts.toruswallet.io/redirect.html',
+        redirectUri: 'torusapp://org.torusresearch.customauthexample/redirect',
+        network: 'testnet', // details for test net
+        enableLogging: true,
+        enableOneKey: false,
+      });
+      console.log({result});
+    } catch (error) {
+      console.error(error, 'mounted caught');
+    }
+  }, []);
+
+  const initializetKey = async () => {
+    try {
+      // let key = await CustomAuth.getTorusKey();
+      // console.log({key});
       console.log("Triggering init");
-
-      // 2. Set jwtParameters depending on the verifier (google / facebook / linkedin etc)
-      // const jwtParams = loginConnectionMap[authVerifier] || {};
-
-      // const { typeOfLogin, clientId, verifier } = verifierMap[authVerifier];
-
-      // 3. Trigger Login ==> opens the popup
-      // const loginResponse = await (tKey.serviceProvider as TorusServiceProvider).triggerLogin({
-      //   typeOfLogin,
-      //   verifier,
-      //   clientId,
-      //   jwtParams,
-      // });
       try {
         let key = await tKey.initialize();
         console.log({key});
       } catch(err) {
         console.log({err});
       }
-
-      // addLog(JSON.stringify(loginResponse));
-      // setConsoleText(loginResponse);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const login = async() => {
+    try {
+      const {typeOfLogin, clientId, verifier, jwtParams} =
+        verifierMap[authVerifier];
+      console.log({typeOfLogin});
+      const loginDetails = await CustomAuth.triggerLogin({
+        typeOfLogin,
+        verifier,
+        clientId,
+        jwtParams,
+      });
+      addLog(loginDetails)
+    } catch (error) {
+      console.error(error, 'login caught');
+    }
+  }
+
+  const createTkey = async() => {
+    try {
+      const res = await tKey._initializeNewKey({initializeModules: true});
+      console.log(res);
+      setShareDetails(res.privKey.toString("hex"));
+      addLog(res.privKey);
+    } catch(err) {
+      console.error("error while createTkey", err);
+    }
+  }
+
+  const reconstructKey = async() => {
+    try {
+      const res = await tKey.reconstructKey();
+      console.log(res);
+      addLog(res.privKey);
+    } catch(err) {
+      console.error("error while createTkey", err);
+    }
+  }
+
+  const getTKeyDetails = async() => {
+    try {
+      addLog(tKey.getKeyDetails());
+    } catch(err) {
+      console.error("error while createTkey", err);
+    }
+  }
+
+  const generateShares = () => {
+    var re = /[0-9A-Fa-f]*/g;
+    var keyToBeSplit = shareDetails.replaceAll('"', "");
+    if (keyToBeSplit.substring(0, 2) === "0x") {
+      keyToBeSplit = keyToBeSplit.substring(2);
+    }
+    if (re.test(keyToBeSplit)) {
+      var shares = secrets().share(keyToBeSplit, total, threshold);
+      setShareDetails(shares.join("\n"));
+      addLog("generated shares");
+      addLog({shares})
+      addLog({shareDetails})
+    } else {
+      addLog("error in generating shares");
+    }
+  };
+
+  const getSolKey = () => {
+    let key = getED25519Key(tKey.privKey.toString());
+    addLog(key.pk);
+    addLog(base58.encode(key.sk));
+  }
+
+  const combineShares = () => {
+    let comb = secrets().combine(shareDetails.split("\n"));
+    setShareDetails(comb);
+    addLog({shareDetails});
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
       <StatusBar style="light" />
@@ -161,6 +211,23 @@ export default function App() {
           }}
           style={{ flex: 1 }}
         >
+          <Button title="initializetKey" onPress={initializetKey}>
+          </Button>
+          <Button title="login" onPress={login}>
+          </Button>
+          <Button title="create new Tkey" onPress={createTkey}>
+          </Button>
+          <Button title="get sol key" onPress={getSolKey}>
+          </Button>
+          <Button title="reconstruct private key" onPress={reconstructKey}>
+          </Button>
+          <Button title="get Tkey Details" onPress={getTKeyDetails}>
+          </Button>
+          <Button title="generate Shares" onPress={generateShares}>
+          </Button>
+          <Button title="combine Shares" onPress={combineShares}>
+          </Button>
+
           {logs.map((log, i) => (
             <Text
               key={`t-${i}`}
@@ -173,8 +240,9 @@ export default function App() {
               {log}
             </Text>
           ))}
-          <Button title="click login" onPress={triggerLogin}>
-          </Button>
+          <Text>
+            shareDetails: {shareDetails}
+          </Text>
         </ScrollView>
       </View>
     </View>
