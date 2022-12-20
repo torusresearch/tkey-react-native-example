@@ -137,6 +137,12 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        manifestPlaceholders = [
+          //... other placeholders if you have them
+          'torusRedirectScheme': 'torusapp',
+          'torusRedirectHost': 'org.torusresearch.customauthandroid',
+          'torusRedirectPathPrefix': '/redirect'
+      ]
     }
     splits {
         abi {
@@ -185,6 +191,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(':customauth-react-native-sdk')
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

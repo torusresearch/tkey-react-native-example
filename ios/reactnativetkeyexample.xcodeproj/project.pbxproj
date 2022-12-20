@@ -7,13 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		234B314476E21DD05D8E1D80 /* libPods-reactnativetkeyexample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29D8A6C04519CEEDF7FB4DDD /* libPods-reactnativetkeyexample.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		5F5F3E725E1F4604A78F50D8 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62233D162E042B1878A706E /* noop-file.swift */; };
-		96905EF65AED1B983A6B3ABC /* libPods-reactnativetkeyexample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-reactnativetkeyexample.a */; settings = {ATTRIBUTES = (Required, ); }; };
-		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		7879A19029515EBD005373E2 /* libRNCustomAuthSdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879A18F29515EBD005373E2 /* libRNCustomAuthSdk.a */; };
+		7879A19B2951C5DE005373E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
+		7879A19C2951C5DE005373E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 /* End PBXBuildFile section */
 
@@ -25,13 +24,18 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = reactnativetkeyexample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = reactnativetkeyexample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = reactnativetkeyexample/main.m; sourceTree = "<group>"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-reactnativetkeyexample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-reactnativetkeyexample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		29D8A6C04519CEEDF7FB4DDD /* libPods-reactnativetkeyexample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-reactnativetkeyexample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5577DC8360AE8D45E9FA1501 /* Pods-reactnativetkeyexample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativetkeyexample.release.xcconfig"; path = "Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample.release.xcconfig"; sourceTree = "<group>"; };
 		59958588C00B4684B305E7B8 /* reactnativetkeyexample-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "reactnativetkeyexample-Bridging-Header.h"; path = "reactnativetkeyexample/reactnativetkeyexample-Bridging-Header.h"; sourceTree = "<group>"; };
-		6C2E3173556A471DD304B334 /* Pods-reactnativetkeyexample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativetkeyexample.debug.xcconfig"; path = "Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample.debug.xcconfig"; sourceTree = "<group>"; };
+		7879A18D29515BB3005373E2 /* libRNCustomAuthSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNCustomAuthSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7879A18F29515EBD005373E2 /* libRNCustomAuthSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNCustomAuthSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7879A19129515ECA005373E2 /* libCustomAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCustomAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7879A1952951628C005373E2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "../../customauth-react-native-sdk/example/ios/customauthexample/AppDelegate.m"; sourceTree = "<group>"; };
+		7879A1962951628C005373E2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "../../customauth-react-native-sdk/example/ios/customauthexample/main.m"; sourceTree = "<group>"; };
 		78EB9BB8294BAA07006E7FB7 /* RNCustomAuthSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNCustomAuthSdk.m; path = "../node_modules/@toruslabs/customauth-react-native-sdk/ios/RNCustomAuthSDK/RNCustomAuthSdk.m"; sourceTree = "<group>"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-reactnativetkeyexample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativetkeyexample.release.xcconfig"; path = "Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = reactnativetkeyexample/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		DC7776B557D6C3C4B0CC7954 /* Pods-reactnativetkeyexample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-reactnativetkeyexample.debug.xcconfig"; path = "Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample.debug.xcconfig"; sourceTree = "<group>"; };
 		E62233D162E042B1878A706E /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "reactnativetkeyexample/noop-file.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-reactnativetkeyexample/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -42,7 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96905EF65AED1B983A6B3ABC /* libPods-reactnativetkeyexample.a in Frameworks */,
+				7879A19029515EBD005373E2 /* libRNCustomAuthSdk.a in Frameworks */,
+				234B314476E21DD05D8E1D80 /* libPods-reactnativetkeyexample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,9 +74,12 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7879A19129515ECA005373E2 /* libCustomAuth.a */,
+				7879A18F29515EBD005373E2 /* libRNCustomAuthSdk.a */,
+				7879A18D29515BB3005373E2 /* libRNCustomAuthSdk.a */,
 				78EB9BB8294BAA07006E7FB7 /* RNCustomAuthSdk.m */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-reactnativetkeyexample.a */,
+				29D8A6C04519CEEDF7FB4DDD /* libPods-reactnativetkeyexample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -86,6 +94,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				7879A1952951628C005373E2 /* AppDelegate.m */,
+				7879A1962951628C005373E2 /* main.m */,
 				13B07FAE1A68108700A75B9A /* reactnativetkeyexample */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -126,8 +136,8 @@
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6C2E3173556A471DD304B334 /* Pods-reactnativetkeyexample.debug.xcconfig */,
-				7A4D352CD337FB3A3BF06240 /* Pods-reactnativetkeyexample.release.xcconfig */,
+				DC7776B557D6C3C4B0CC7954 /* Pods-reactnativetkeyexample.debug.xcconfig */,
+				5577DC8360AE8D45E9FA1501 /* Pods-reactnativetkeyexample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -147,13 +157,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "reactnativetkeyexample" */;
 			buildPhases = (
-				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
+				E19AC73496CF0EBFB69CA08A /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
+				9432980F1F3CF6296C5CB809 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -211,7 +221,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -221,9 +231,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\n`node --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=/opt/homebrew/bin/node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+		9432980F1F3CF6296C5CB809 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Torus-fetchNodeDetails/FNDBundle.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FNDBundle.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E19AC73496CF0EBFB69CA08A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -243,30 +277,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/Torus-fetchNodeDetails/Torus-fetchNodeDetails.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Torus-fetchNodeDetails.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-reactnativetkeyexample/Pods-reactnativetkeyexample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -295,10 +305,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				5F5F3E725E1F4604A78F50D8 /* noop-file.swift in Sources */,
+				7879A19B2951C5DE005373E2 /* AppDelegate.m in Sources */,
+				7879A19C2951C5DE005373E2 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +315,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-reactnativetkeyexample.debug.xcconfig */;
+			baseConfigurationReference = DC7776B557D6C3C4B0CC7954 /* Pods-reactnativetkeyexample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -326,6 +334,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.toruswallet.reactnativetkeyexample;
 				PRODUCT_NAME = reactnativetkeyexample;
 				SWIFT_OBJC_BRIDGING_HEADER = "reactnativetkeyexample/reactnativetkeyexample-Bridging-Header.h";
@@ -338,7 +347,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-reactnativetkeyexample.release.xcconfig */;
+			baseConfigurationReference = 5577DC8360AE8D45E9FA1501 /* Pods-reactnativetkeyexample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -352,6 +361,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.toruswallet.reactnativetkeyexample;
 				PRODUCT_NAME = reactnativetkeyexample;
 				SWIFT_OBJC_BRIDGING_HEADER = "reactnativetkeyexample/reactnativetkeyexample-Bridging-Header.h";

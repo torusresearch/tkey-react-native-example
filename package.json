@@ -9,11 +9,13 @@
     "start": "expo start --clear",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "ios:test": "react-native run-ios --simulator='iPhone 14'",
     "web": "expo start --web",
     "eject": "expo eject",
     "install:local": "npm i ./*.tgz"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.70.2",
     "@tkey/common-types": "^7.0.0",
     "@tkey/core": "^7.0.0",
     "@tkey/default": "^7.0.0",
@@ -25,7 +27,7 @@
     "@tkey/storage-layer-torus": "^7.0.0",
     "@tkey/web-storage": "^7.0.0",
     "@toruslabs/broadcast-channel": "^6.1.1",
-    "@toruslabs/customauth-react-native-sdk": "^3.1.0",
+    "@toruslabs/customauth-react-native-sdk": "file:toruslabs-customauth-react-native-sdk-3.1.0.tgz",
     "@toruslabs/eccrypto": "^1.1.8",
     "@toruslabs/metadata-helpers": "^3.0.0",
     "@toruslabs/openlogin-ed25519": "^2.0.0",
@@ -33,6 +35,7 @@
     "@tradle/react-native-http": "^2.0.1",
     "assert": "^2.0.0",
     "base-64": "^1.0.0",
+    "big-integer": "^1.6.51",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -50,7 +53,8 @@
     "react-native-web": "0.17.7",
     "readable-stream": "^4.2.0",
     "tweetnacl": "^1.0.3",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "web3": "^1.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
