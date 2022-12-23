@@ -2,16 +2,15 @@ import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import "./global";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import CustomAuth from "@toruslabs/customauth-react-native-sdk";
 import { Button, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Web3 from "web3";
-import { StatusBar } from "expo-status-bar";
 import ThresholdKey from "@tkey/default";
 import TorusServiceProvider from "@tkey/service-provider-torus";
 import TorusStorageLayer from "@tkey/storage-layer-torus";
 import * as ec from "@toruslabs/eccrypto";
-import CustomAuth from "@toruslabs/customauth-react-native-sdk";
-import { getED25519Key } from "@toruslabs/openlogin-ed25519";
 import BN from "bn.js";
+import { getED25519Key } from "@toruslabs/openlogin-ed25519";
 import base58 from "bs58";
 import { Keypair } from "@solana/web3.js";
 import { sign } from "tweetnacl";
@@ -26,19 +25,13 @@ const FACEBOOK = "facebook";
 const LINKEDIN = "linkedin";
 const TWITTER = "twitter";
 const AUTH_DOMAIN = "https://torus-test.auth0.com";
-let shares: any;
-const loginConnectionMap: Record<string, any> = {
-  [LINKEDIN]: { domain: AUTH_DOMAIN },
-  [TWITTER]: { domain: AUTH_DOMAIN },
-};
-
-const verifierMap: Record<string, any> = {
+const verifierMap = {
   [GOOGLE]: {
     name: "Google",
     typeOfLogin: "google",
     clientId:
       "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
-    verifier: "web3auth-testnet-verifier",
+    verifier: 'google-lrc',
   },
   [FACEBOOK]: {
     name: "Facebook",
@@ -59,10 +52,11 @@ const verifierMap: Record<string, any> = {
     verifier: "torus-auth0-twitter-lrc",
   },
 };
+
 const directParams = {
   baseUrl: `http://localhost:3000/serviceworker/`,
   enableLogging: true,
-  network: "testnet" as any,
+  network: "testnet",
   // uxMode: UX_MODE.REDIRECT,
 };
 const serviceProvider = new TorusServiceProvider({
@@ -85,13 +79,14 @@ const tKey = new ThresholdKey({
   modules: { shareTransfer: shareTransferModule },
 });
 
+
 function HomeScreen({ navigation }) {
-  const [logs, setLogs] = useState<string[]>([]);
-  const [authVerifier, setAuthVerifier] = useState<string>("google");
-  const [shareDetails, setShareDetails] = useState<string>("0x0");
-  const [total, setTotal] = useState<number>(3);
-  const [threshold, setThreshold] = useState<number>(2);
-  const addLog = useCallback((log: any) => {
+  const [logs, setLogs] = useState([]);
+  const [authVerifier, setAuthVerifier] = useState("google");
+  const [shareDetails, setShareDetails] = useState("0x0");
+  const [total, setTotal] = useState(3);
+  const [threshold, setThreshold] = useState(2);
+  const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
   }, []);
 
@@ -100,7 +95,8 @@ function HomeScreen({ navigation }) {
       // Init Service Provider
       try {
         console.log("init in");
-        (window.navigator as any).userAgent = "ReactNative";
+        
+        (window.navigator).userAgent = "ReactNative";
         // await (tKey.serviceProvider as TorusServiceProvider).init({ skipInit: true, });
         tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
 
@@ -110,19 +106,19 @@ function HomeScreen({ navigation }) {
       }
     };
     init();
-    // try {
-    //   // console.log({ CustomAuth });
-    //   const result = CustomAuth.init({
-    //     browserRedirectUri: "https://scripts.toruswallet.io/redirect.html",
-    //     redirectUri: "torusapp://org.torusresearch.customauthexample/redirect",
-    //     network: "testnet", // details for test net
-    //     enableLogging: true,
-    //     enableOneKey: false,
-    //   });
-    //   console.log({ result });
-    // } catch (error) {
-    //   console.error(error, "mounted caught");
-    // }
+    try {
+      console.log({ CustomAuth });
+      const result = CustomAuth.init({
+        browserRedirectUri: 'https://scripts.toruswallet.io/redirect.html',
+        redirectUri: 'torusapp://org.torusresearch.customauthexample/redirect',
+        network: 'testnet', // details for test net
+        enableLogging: true,
+        enableOneKey: false,
+      });
+      console.log({ result });
+    } catch (error) {
+      console.error(error, "mounted caught");
+    }
   }, []);
 
   // const initializetKey = async () => {
@@ -141,22 +137,6 @@ function HomeScreen({ navigation }) {
   //   }
   // };
 
-  const login = async () => {
-    try {
-      const { typeOfLogin, clientId, verifier, jwtParams } =
-        verifierMap[authVerifier];
-      console.log({ typeOfLogin });
-      const loginDetails = await CustomAuth.triggerLogin({
-        typeOfLogin,
-        verifier,
-        clientId,
-        jwtParams,
-      });
-      addLog(loginDetails);
-    } catch (error) {
-      console.error(error, "login caught");
-    }
-  };
 
   const createTkey = async () => {
     try {
@@ -194,9 +174,8 @@ function HomeScreen({ navigation }) {
 
   const requestShare = async () => {
     try {
-      const res = await (
-        tKey.modules.shareTransfer as ShareTransferModule
-      ).requestNewShare(navigator.userAgent, tKey.getCurrentShareIndexes());
+      
+      const res = await (tKey.modules.shareTransfer).requestNewShare(navigator.userAgent, tKey.getCurrentShareIndexes());
       addLog(res);
     } catch (error) {
       console.log({ error });
@@ -207,11 +186,8 @@ function HomeScreen({ navigation }) {
     addLog("Approving Share Request");
     try {
       const result = await (
-        tKey.modules.shareTransfer as ShareTransferModule
+        tKey.modules.shareTransfer
       ).getShareTransferStore();
-      const requests = await (
-        tKey.modules.shareTransfer as ShareTransferModule
-      ).lookForRequests();
       const share_store = await tKey.generateNewShare();
       // const newShare = await tKey.generateNewShare();
       // shareToShare = newShare.newShareStores[newShare.newShareIndex.toString("hex")];
@@ -222,18 +198,33 @@ function HomeScreen({ navigation }) {
       // const shareStore = tKey.outputShareStore(requests[0]);
       // addLog({shareStore});
 
-      await (tKey.modules.shareTransfer as ShareTransferModule).approveRequest(
+      await (tKey.modules.shareTransfer).approveRequest(
         pubkey2,
         share_store.newShareStores[share_store.newShareIndex.toString("hex")]
       );
       // await tKey.syncLocalMetadataTransitions();
       addLog("Approved Share Transfer request");
       // await tKey._syncShareMetadata()
-      const res = await (
-        tKey.modules.shareTransfer as ShareTransferModule
-      ).resetShareTransferStore();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+
+  const login = async () => {
+    try {
+      const { typeOfLogin, clientId, verifier, jwtParams } =
+        verifierMap[authVerifier];
+      console.log({ typeOfLogin });
+      const loginDetails = await CustomAuth.triggerLogin({
+        typeOfLogin,
+        verifier,
+        clientId,
+        jwtParams,
+      });
+      addLog(loginDetails);
+    } catch (error) {
+      console.error(error, "login caught");
     }
   };
 
@@ -242,7 +233,7 @@ function HomeScreen({ navigation }) {
     try {
       // const result = await (tKey.modules.shareTransfer as ShareTransferModule).getShareTransferStore();
       const requests = await (
-        tKey.modules.shareTransfer as ShareTransferModule
+        tKey.modules.shareTransfer
       ).lookForRequests();
       addLog("Share Requests" + JSON.stringify(requests));
       console.log("Share requests", requests);
@@ -254,7 +245,6 @@ function HomeScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <StatusBar style="light" />
       <View style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
@@ -291,7 +281,7 @@ function HomeScreen({ navigation }) {
             onPress={() => navigation.navigate("ecdh")}
           ></Button>
          
-          {/* <Button title="login" onPress={login}></Button> */}
+          <Button title="login" onPress={login}></Button>
 
           {logs.map((log, i) => (
             <Text
@@ -312,11 +302,11 @@ function HomeScreen({ navigation }) {
   );
 }
 
-function SolEthKeyScreen({ navigation }) {
+function SolEthKeyScreen() {
   const web3 = new Web3();
-  const [solKeyPair, setSolKeyPair] = useState<Keypair>(null);
-  const [ethWallet, setEthWallet] = useState(null);
-  const [logs, setLogs] = useState<string[]>([]);
+  const [solKeyPair, setSolKeyPair] = useState();
+  const [ethWallet, setEthWallet] = useState();
+  const [logs, setLogs] = useState([]);
 
   const getSolKey = () => {
     let key = getED25519Key(tKey.privKey.toString("hex"));
@@ -355,15 +345,13 @@ function SolEthKeyScreen({ navigation }) {
   };
 
   const signEthMessage = () => {
-    const signMessage = web3.eth.accounts.sign(
-      "hello world",
-      ethWallet.privateKey
-    );
+    
+    const signMessage = web3.eth.accounts.sign("hello world",ethWallet.privateKey);
     addLog({ signMessage });
     console.log(signMessage);
   };
 
-  const addLog = useCallback((log: any) => {
+  const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
   }, []);
 
@@ -391,9 +379,9 @@ function SolEthKeyScreen({ navigation }) {
 }
 
 function EcdhScreen() {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState([]);
   const [data, setData] = useState([]);
-  const [selected, setSelected] = useState(undefined);
+  const [selected, setSelected] = useState("");
   const [query, setQuery] = useState('');
   const countries = [
     {name: "secp256k1"},
@@ -437,7 +425,7 @@ function EcdhScreen() {
     setQuery(text);
   };
 
-  const addLog = useCallback((log: any) => {
+  const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
   }, []);
 

@@ -1,26 +1,4 @@
 {
-  "expo": {
-    "name": "react-native-tkey-example",
-    "slug": "react-native-tkey-example",
-    "owner": "torus-wallet",
-    "privacy": "hidden",
-    "version": "1.0.0",
-    "scheme": "react-native-tkey-example",
-    "orientation": "portrait",
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "plugins": [
-      "./plugin-ios.js"
-    ],
-    "android": {
-      "package": "com.toruswallet.reactnativetkeyexample"
-    },
-    "ios": {
-      "bundleIdentifier": "com.toruswallet.reactnativetkeyexample"
-    }
-  }
+  "name": "reactnativetkeyexample",
+  "displayName": "reactnativetkeyexample"
 }
