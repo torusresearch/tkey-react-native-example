@@ -60,7 +60,6 @@ const directParams = {
   // uxMode: UX_MODE.REDIRECT,
 };
 const serviceProvider = new TorusServiceProvider({
-  ...directParams,
   customAuthArgs: directParams,
 });
 const storageLayer = new TorusStorageLayer({
@@ -86,6 +85,7 @@ function HomeScreen({ navigation }) {
   const [shareDetails, setShareDetails] = useState("0x0");
   const [total, setTotal] = useState(3);
   const [threshold, setThreshold] = useState(2);
+  const [postboxKey, setPostboxKey] = useState("");
   const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
   }, []);
@@ -98,7 +98,7 @@ function HomeScreen({ navigation }) {
         
         (window.navigator).userAgent = "ReactNative";
         // await (tKey.serviceProvider as TorusServiceProvider).init({ skipInit: true, });
-        tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
+        // tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
 
         console.log("init resolved");
       } catch (error) {
@@ -222,7 +222,16 @@ function HomeScreen({ navigation }) {
         clientId,
         jwtParams,
       });
-      addLog(loginDetails);
+      addLog({loginDetails});
+      let pbKey = new BN(loginDetails.privateKey, "hex");
+      tKey.serviceProvider.postboxKey = pbKey;
+      setPostboxKey(pbKey);
+      const shareStore = await tKey.storageLayer.getMetadata({ privKey: pbKey });
+      addLog({shareStore});
+      const isNewKey = shareStore.message === "KEY_NOT_FOUND";
+      addLog({isNewKey});
+      let keyDetails = await tKey.initialize({ input: shareStore }); // metadata is from the above step
+      addLog({keyDetails});
     } catch (error) {
       console.error(error, "login caught");
     }
