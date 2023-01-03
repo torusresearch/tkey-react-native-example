@@ -213,6 +213,9 @@ function HomeScreen({ navigation }) {
 
   const login = async () => {
     try {
+      // TODO
+      // remove logs 
+      // don't call getMetadata; call initialize; 
       const { typeOfLogin, clientId, verifier, jwtParams } =
         verifierMap[authVerifier];
       console.log({ typeOfLogin });
@@ -226,10 +229,13 @@ function HomeScreen({ navigation }) {
       let pbKey = new BN(loginDetails.privateKey, "hex");
       tKey.serviceProvider.postboxKey = pbKey;
       setPostboxKey(pbKey);
+      // following line isn't required
       const shareStore = await tKey.storageLayer.getMetadata({ privKey: pbKey });
-      addLog({shareStore});
+      addLog({ shareStore });
+      
       const isNewKey = shareStore.message === "KEY_NOT_FOUND";
-      addLog({isNewKey});
+      addLog({ isNewKey });
+      
       let keyDetails = await tKey.initialize({ input: shareStore }); // metadata is from the above step
       addLog({keyDetails});
     } catch (error) {
@@ -253,7 +259,7 @@ function HomeScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#17171D" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <View style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
@@ -318,6 +324,8 @@ function SolEthKeyScreen() {
   const [logs, setLogs] = useState([]);
 
   const getSolKey = () => {
+    // add error handling here 
+    // check if (tkey.privKey)
     let key = getED25519Key(tKey.privKey.toString("hex"));
     addLog(key.pk);
     addLog(base58.encode(key.sk));
