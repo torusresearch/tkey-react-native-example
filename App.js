@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import Web3 from "web3";
 import ThresholdKey from "@tkey/default";
-import TorusServiceProvider from "@tkey/service-provider-torus";
+import TorusServiceProvider from "@tkey/service-provider-base";
 import TorusStorageLayer from "@tkey/storage-layer-torus";
 import * as ec from "@toruslabs/eccrypto";
 import BN from "bn.js";

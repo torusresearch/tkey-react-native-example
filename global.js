@@ -17,10 +17,3 @@ if(!global.process) {
     global.process = require("process");
     console.log({process: global.process});
 }
-console.log({typeof: typeof BigInt(1)})
-// if (typeof BigInt === 'undefined')
-//  global.BigInt = require('big-integer')
-
-// if (typeof BigInt === 'undefined') {
-    // global.BigInt = require('big-integer').;
-// }
