@@ -229,7 +229,7 @@ function HomeScreen({ navigation }) {
           }}
           style={{ flex: 1 }}
         >
-          <Button title="create new Tkey" onPress={createTkey}></Button>
+          <Button title="Create new Tkey" onPress={createTkey}></Button>
           <Button title="Request new Share" onPress={requestShare}></Button>
           <Button
             title="Check Share Request"
@@ -240,12 +240,12 @@ function HomeScreen({ navigation }) {
             onPress={approveShareRequest}
           ></Button>
           <Button
-            title="reconstruct private key"
+            title="Reconstruct private key"
             onPress={reconstructKey}
           ></Button>
           <Button title="Delete Share" onPress={deleteShares}></Button>
-          <Button title="get Tkey Details" onPress={getTKeyDetails}></Button>
-          <Button title="generate Shares" onPress={generateShares}></Button>
+          <Button title="Get Tkey Details" onPress={getTKeyDetails}></Button>
+          <Button title="Generate Shares" onPress={generateShares}></Button>
 
           <Button
             title="Sol & Eth Screen"
@@ -256,7 +256,7 @@ function HomeScreen({ navigation }) {
             onPress={() => navigation.navigate("ecdh")}
           ></Button>
 
-          <Button title="login" onPress={login}></Button>
+          <Button title="Login" onPress={login}></Button>
 
           {logs.map((log, i) => (
             <Text
@@ -343,10 +343,10 @@ function SolEthKeyScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <Button title="get sol key" onPress={getSolKey}></Button>
-      <Button title="signMessageSol" onPress={signMessageSol}></Button>
-      <Button title="createEthWallet" onPress={createEthWallet}></Button>
-      <Button title="signEthMessage" onPress={signEthMessage}></Button>
+      <Button title="Get sol key" onPress={getSolKey}></Button>
+      <Button title="Sign Message Sol" onPress={signMessageSol}></Button>
+      <Button title="Create EthWallet" onPress={createEthWallet}></Button>
+      <Button title="Sign EthMessage" onPress={signEthMessage}></Button>
 
       {logs.map((log, i) => (
         <Text
