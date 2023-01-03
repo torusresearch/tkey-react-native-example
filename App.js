@@ -3,7 +3,15 @@ import "react-native-url-polyfill/auto";
 import "./global";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import CustomAuth from "@toruslabs/customauth-react-native-sdk";
-import { Button, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Web3 from "web3";
 import ThresholdKey from "@tkey/default";
 import TorusServiceProvider from "@tkey/service-provider-torus";
@@ -21,35 +29,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onOpen, Picker } from "react-native-actions-sheet-picker";
 
 const GOOGLE = "google";
-const FACEBOOK = "facebook";
-const LINKEDIN = "linkedin";
-const TWITTER = "twitter";
-const AUTH_DOMAIN = "https://torus-test.auth0.com";
 const verifierMap = {
   [GOOGLE]: {
     name: "Google",
     typeOfLogin: "google",
     clientId:
       "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
-    verifier: 'google-lrc',
-  },
-  [FACEBOOK]: {
-    name: "Facebook",
-    typeOfLogin: "facebook",
-    clientId: "617201755556395",
-    verifier: "facebook-lrc",
-  },
-  [LINKEDIN]: {
-    name: "Linkedin",
-    typeOfLogin: "linkedin",
-    clientId: "59YxSgx79Vl3Wi7tQUBqQTRTxWroTuoc",
-    verifier: "torus-auth0-linkedin-lrc",
-  },
-  [TWITTER]: {
-    name: "Twitter",
-    typeOfLogin: "twitter",
-    clientId: "A7H8kkcmyFRlusJQ9dZiqBLraG2yWIsO",
-    verifier: "torus-auth0-twitter-lrc",
+    verifier: "google-lrc",
   },
 };
 
@@ -57,7 +43,6 @@ const directParams = {
   baseUrl: `http://localhost:3000/serviceworker/`,
   enableLogging: true,
   network: "testnet",
-  // uxMode: UX_MODE.REDIRECT,
 };
 const serviceProvider = new TorusServiceProvider({
   customAuthArgs: directParams,
@@ -66,25 +51,17 @@ const storageLayer = new TorusStorageLayer({
   hostUrl: "https://metadata.tor.us",
 });
 const shareTransferModule = new ShareTransferModule();
-// const webStorageModule = new WebStorageModule();
 
-// addLog(JSON.stringify(a));
-
-// addLog(JSON.stringify(tKey));
-console.log("hi1");
 const tKey = new ThresholdKey({
   serviceProvider: serviceProvider,
   storageLayer,
   modules: { shareTransfer: shareTransferModule },
 });
 
-
 function HomeScreen({ navigation }) {
   const [logs, setLogs] = useState([]);
   const [authVerifier, setAuthVerifier] = useState("google");
   const [shareDetails, setShareDetails] = useState("0x0");
-  const [total, setTotal] = useState(3);
-  const [threshold, setThreshold] = useState(2);
   const [postboxKey, setPostboxKey] = useState("");
   const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
@@ -94,68 +71,55 @@ function HomeScreen({ navigation }) {
     const init = async () => {
       // Init Service Provider
       try {
-        console.log("init in");
-        
-        (window.navigator).userAgent = "ReactNative";
-        // await (tKey.serviceProvider as TorusServiceProvider).init({ skipInit: true, });
-        // tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
-
-        console.log("init resolved");
+        window.navigator.userAgent = "ReactNative";
       } catch (error) {
-        console.error(error);
+        addLog({ error });
       }
     };
     init();
     try {
-      console.log({ CustomAuth });
       const result = CustomAuth.init({
-        browserRedirectUri: 'https://scripts.toruswallet.io/redirect.html',
-        redirectUri: 'torusapp://org.torusresearch.customauthexample/redirect',
-        network: 'testnet', // details for test net
+        browserRedirectUri: "https://scripts.toruswallet.io/redirect.html",
+        redirectUri: "torusapp://org.torusresearch.customauthexample/redirect",
+        network: "testnet", // details for test net
         enableLogging: true,
         enableOneKey: false,
       });
-      console.log({ result });
     } catch (error) {
-      console.error(error, "mounted caught");
+      addLog(error, "mounted caught");
     }
   }, []);
 
-  // const initializetKey = async () => {
-  //   try {
-  //     // let key = await CustomAuth.getTorusKey();
-  //     // console.log({key});
-  //     console.log("Triggering init");
-  //     try {
-  //       let key = await tKey.initialize();
-  //       console.log({ key });
-  //     } catch (err) {
-  //       console.log({ err });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
+  const initializetKey = async () => {
+    try {
+      let key = await tKey.initialize();
+      addLog({ key });
+    } catch (err) {
+      addLog({ err });
+    }
+  };
 
   const createTkey = async () => {
     try {
+      tKey.serviceProvider.postboxKey = new BN(ec.generatePrivate());
+      await initializetKey();
+
       const res = await tKey._initializeNewKey({ initializeModules: true });
-      console.log(res);
+      addLog(res);
+
       setShareDetails(res.privKey.toString("hex"));
       addLog(res.privKey);
     } catch (err) {
-      console.error("error while createTkey", err);
+      addLog("error while createTkey", err);
     }
   };
 
   const reconstructKey = async () => {
     try {
       const res = await tKey.reconstructKey();
-      console.log(res);
       addLog(res.privKey);
     } catch (err) {
-      console.error("error while createTkey", err);
+      addLog("error while createTkey", err);
     }
   };
 
@@ -163,103 +127,98 @@ function HomeScreen({ navigation }) {
     try {
       addLog(tKey.getKeyDetails());
     } catch (err) {
-      console.error("error while createTkey", err);
+      addLog("error while createTkey", err);
     }
   };
 
   const generateShares = async () => {
-    const newShare = await tKey.generateNewShare();
-    addLog({ newShare });
+    try {
+      const newShare = await tKey.generateNewShare();
+      addLog({ newShare });
+    } catch (err) {
+      addLog("generate shares", err);
+    }
+  };
+
+  const deleteShares = async () => {
+    try {
+      const shareIndex = await tKey.getCurrentShareIndexes();
+      addLog({ shareIndex });
+      const deleteShare = await tKey.deleteShare(
+        shareIndex[shareIndex.length - 1]
+      );
+      addLog({ deleteShare });
+    } catch (err) {
+      addLog({ err });
+    }
   };
 
   const requestShare = async () => {
     try {
-      
-      const res = await (tKey.modules.shareTransfer).requestNewShare(navigator.userAgent, tKey.getCurrentShareIndexes());
+      const res = await tKey.modules.shareTransfer.requestNewShare(
+        navigator.userAgent,
+        tKey.getCurrentShareIndexes()
+      );
       addLog(res);
     } catch (error) {
-      console.log({ error });
+      addLog({ error });
     }
   };
 
   const approveShareRequest = async () => {
     addLog("Approving Share Request");
     try {
-      const result = await (
-        tKey.modules.shareTransfer
-      ).getShareTransferStore();
+      const result = await tKey.modules.shareTransfer.getShareTransferStore();
       const share_store = await tKey.generateNewShare();
-      // const newShare = await tKey.generateNewShare();
-      // shareToShare = newShare.newShareStores[newShare.newShareIndex.toString("hex")];
-      const pubkey2 = Object.keys(result)[0];
-      console.log(pubkey2);
-      addLog({ result });
-      // console.log(share_store, requests);
-      // const shareStore = tKey.outputShareStore(requests[0]);
-      // addLog({shareStore});
 
-      await (tKey.modules.shareTransfer).approveRequest(
+      const pubkey2 = Object.keys(result)[0];
+      addLog({ result });
+
+      await tKey.modules.shareTransfer.approveRequest(
         pubkey2,
         share_store.newShareStores[share_store.newShareIndex.toString("hex")]
       );
-      // await tKey.syncLocalMetadataTransitions();
       addLog("Approved Share Transfer request");
-      // await tKey._syncShareMetadata()
     } catch (err) {
-      console.error(err);
+      addLog(err);
     }
   };
 
-
   const login = async () => {
     try {
-      // TODO
-      // remove logs 
-      // don't call getMetadata; call initialize; 
       const { typeOfLogin, clientId, verifier, jwtParams } =
         verifierMap[authVerifier];
-      console.log({ typeOfLogin });
       const loginDetails = await CustomAuth.triggerLogin({
         typeOfLogin,
         verifier,
         clientId,
         jwtParams,
       });
-      addLog({loginDetails});
+      addLog({ loginDetails });
+
       let pbKey = new BN(loginDetails.privateKey, "hex");
       tKey.serviceProvider.postboxKey = pbKey;
       setPostboxKey(pbKey);
-      // following line isn't required
-      const shareStore = await tKey.storageLayer.getMetadata({ privKey: pbKey });
-      addLog({ shareStore });
-      
-      const isNewKey = shareStore.message === "KEY_NOT_FOUND";
-      addLog({ isNewKey });
-      
-      let keyDetails = await tKey.initialize({ input: shareStore }); // metadata is from the above step
-      addLog({keyDetails});
+
+      let keyDetails = await tKey.initialize(); // metadata is from the above step
+      addLog({ keyDetails });
     } catch (error) {
-      console.error(error, "login caught");
+      addLog(error, "login caught");
     }
   };
 
   const checkShareRequests = async () => {
     addLog("Checking Share Requests");
     try {
-      // const result = await (tKey.modules.shareTransfer as ShareTransferModule).getShareTransferStore();
-      const requests = await (
-        tKey.modules.shareTransfer
-      ).lookForRequests();
+      const requests = await tKey.modules.shareTransfer.lookForRequests();
       addLog("Share Requests" + JSON.stringify(requests));
-      console.log("Share requests", requests);
-      // console.log("Share Transfer Store", result);
     } catch (err) {
-      console.log(err);
+      addLog(err);
     }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
+    <View style={{ flex: 1, backgroundColor: "#17171D" }}>
       <View style={{ flex: 1 }}>
         <ScrollView
           contentContainerStyle={{
@@ -284,6 +243,7 @@ function HomeScreen({ navigation }) {
             title="reconstruct private key"
             onPress={reconstructKey}
           ></Button>
+          <Button title="Delete Share" onPress={deleteShares}></Button>
           <Button title="get Tkey Details" onPress={getTKeyDetails}></Button>
           <Button title="generate Shares" onPress={generateShares}></Button>
 
@@ -295,7 +255,7 @@ function HomeScreen({ navigation }) {
             title="ECDH Screen"
             onPress={() => navigation.navigate("ecdh")}
           ></Button>
-         
+
           <Button title="login" onPress={login}></Button>
 
           {logs.map((log, i) => (
@@ -324,48 +284,57 @@ function SolEthKeyScreen() {
   const [logs, setLogs] = useState([]);
 
   const getSolKey = () => {
-    // add error handling here 
-    // check if (tkey.privKey)
-    let key = getED25519Key(tKey.privKey.toString("hex"));
-    addLog(key.pk);
-    addLog(base58.encode(key.sk));
     try {
-      console.log(key.sk.byteLength);
+      let key = getED25519Key(tKey.privKey.toString("hex"));
+      addLog(key.pk);
+      addLog(base58.encode(key.sk));
+      addLog(key.sk.byteLength);
+
       let sk = Keypair.fromSecretKey(key.sk);
       setSolKeyPair(sk);
       addLog(`pubKey ${sk.publicKey}`);
       addLog(`sk ${base58.encode(sk.secretKey)}`);
     } catch (err) {
-      console.log({ err });
+      addLog({ err });
     }
   };
 
   const signMessageSol = () => {
-    const signedMessage = sign.detached(
-      Buffer.from("test", "utf-8"),
-      solKeyPair.secretKey
-    );
-    const signedHex = Buffer.from(signedMessage).toString("hex");
-    addLog({ signedHex });
+    try {
+      const signedMessage = sign.detached(
+        Buffer.from("test", "utf-8"),
+        solKeyPair.secretKey
+      );
+      const signedHex = Buffer.from(signedMessage).toString("hex");
+      addLog({ signedHex });
+    } catch (err) {
+      addLog("Check if sol and tkey has been generated", err);
+    }
   };
 
   const createEthWallet = () => {
-    let pKey = tKey.privKey.toString("hex");
-    console.log(pKey);
-    // let wallet = Wallet.fromPrivateKey(Buffer.from(pKey, "hex"));
-    const account = web3.eth.accounts.privateKeyToAccount(pKey);
-    setEthWallet(account);
-    addLog(account.address);
-    addLog(account.privateKey);
-    // addLog({ethPub: wallet.getAddress().toString("hex")});
-    // addLog({priv: wallet.getPrivateKeyString()});
+    try {
+      let pKey = tKey.privKey.toString("hex");
+
+      const account = web3.eth.accounts.privateKeyToAccount(pKey);
+      setEthWallet(account);
+      addLog(account.address);
+      addLog(account.privateKey);
+    } catch (err) {
+      addLog("Check if tkey has been generated", err);
+    }
   };
 
   const signEthMessage = () => {
-    
-    const signMessage = web3.eth.accounts.sign("hello world",ethWallet.privateKey);
-    addLog({ signMessage });
-    console.log(signMessage);
+    try {
+      const signMessage = web3.eth.accounts.sign(
+        "hello world",
+        ethWallet.privateKey
+      );
+      addLog({ signMessage });
+    } catch (err) {
+      addLog("Check if eth wallet and tkey has been generated", err);
+    }
   };
 
   const addLog = useCallback((log) => {
@@ -399,18 +368,15 @@ function EcdhScreen() {
   const [logs, setLogs] = useState([]);
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState("");
-  const [query, setQuery] = useState('');
-  const countries = [
-    {name: "secp256k1"},
-    {name: "ed25519"},
-  ]
+  const [query, setQuery] = useState("");
+  const countries = [{ name: "secp256k1" }, { name: "ed25519" }];
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center',
+      alignItems: "center",
     },
     button: {
-      backgroundColor: '#8B93A5',
+      backgroundColor: "#8B93A5",
       padding: 10,
       borderRadius: 6,
       marginTop: 50,
@@ -428,8 +394,8 @@ function EcdhScreen() {
     if (data && data.length > 0) {
       return data.filter((item) =>
         item.name
-          .toLocaleLowerCase('en')
-          .includes(query.toLocaleLowerCase('en'))
+          .toLocaleLowerCase("en")
+          .includes(query.toLocaleLowerCase("en"))
       );
     }
   }, [data, query]);
@@ -471,31 +437,37 @@ function EcdhScreen() {
     addLog(`Alice shared key: ${aliceSecret.toString("hex")}`);
     addLog(`Bob shared key: ${bobSecret.toString("hex")}`);
   };
-  
+
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            onOpen('Curve');
-          }}
-        >
-          <Text>{ selected || `Choose Curve` }</Text>
-        </TouchableOpacity>
-        <Text style={{
-                fontFamily: Platform.OS === "ios" ? "Courier New" : "monospace",
-                color: "#fff",
-                fontSize: 14,
-              }}>selected Curve: ${selected}</Text>
-        <Picker
-          id="Curve"
-          data={filteredData}
-          inputValue={query}
-          searchable={true}
-          label="Select Curve"
-          setSelected={(value) => {setSelected(value.name)}}
-          onSearch={onSearch}
-        />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          onOpen("Curve");
+        }}
+      >
+        <Text>{selected || `Choose Curve`}</Text>
+      </TouchableOpacity>
+      <Text
+        style={{
+          fontFamily: Platform.OS === "ios" ? "Courier New" : "monospace",
+          color: "#fff",
+          fontSize: 14,
+        }}
+      >
+        selected Curve: ${selected}
+      </Text>
+      <Picker
+        id="Curve"
+        data={filteredData}
+        inputValue={query}
+        searchable={true}
+        label="Select Curve"
+        setSelected={(value) => {
+          setSelected(value.name);
+        }}
+        onSearch={onSearch}
+      />
       <Button title="trigger ECDH Functions" onPress={ecdh}></Button>
 
       {logs.map((log, i) => (
@@ -514,14 +486,6 @@ function EcdhScreen() {
   );
 }
 
-function TestScreen() {
-  return (
-    <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <Text>Test Screen</Text>
-    </View>
-  );
-}
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -530,7 +494,6 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="ecdh" component={EcdhScreen} />
-        <Stack.Screen name="test" component={TestScreen} />
         <Stack.Screen name="SolEthKey" component={SolEthKeyScreen} />
       </Stack.Navigator>
     </NavigationContainer>
