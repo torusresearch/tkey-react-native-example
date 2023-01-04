@@ -27,6 +27,8 @@ import crypto from "crypto-browserify";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onOpen, Picker } from "react-native-actions-sheet-picker";
+import { Modal } from "./modal";
+import { Payload as SIWPayload, SIWWeb3 } from '@web3auth/sign-in-with-web3';
 
 const GOOGLE = "google";
 const verifierMap = {
@@ -248,8 +250,12 @@ function HomeScreen({ navigation }) {
           <Button title="Generate Shares" onPress={generateShares}></Button>
 
           <Button
-            title="Sol & Eth Screen"
-            onPress={() => navigation.navigate("SolEthKey")}
+            title="Sol Screen"
+            onPress={() => navigation.navigate("Sol Screen")}
+          ></Button>
+          <Button
+            title="Eth Screen"
+            onPress={() => navigation.navigate("Eth Screen")}
           ></Button>
           <Button
             title="ECDH Screen"
@@ -277,10 +283,73 @@ function HomeScreen({ navigation }) {
   );
 }
 
-function SolEthKeyScreen() {
-  const web3 = new Web3();
+function ConfirmModal({ visible, message, handleSign }) {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+    text: {
+      fontSize: 16,
+      fontWeight: "400",
+      textAlign: "center",
+    },
+    separator: {
+      marginVertical: 30,
+      height: 1,
+      width: "80%",
+    },
+    input: {
+      paddingTop: 10,
+      borderColor: "grey",
+      borderBottomWidth: 2,
+    },
+    button: {
+      flexDirection: "row",
+      flex: 1,
+      justifyContent: "center",
+    },
+    modal: {
+      width: "100%",
+      height: "90%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
+
+  return (
+    <Modal isVisible={visible}>
+      <Modal.Container>
+        <View style={styles.modal}>
+          <Modal.Header title="Signing Message" />
+          <Modal.Body>
+            <Text style={styles.text}>
+              {message}
+            </Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <View style={styles.button}>
+              <Button title="Cancel" onPress={() => handleSign(false)} />
+              <Button title="Approve" onPress={() => handleSign(true)} />
+            </View>
+          </Modal.Footer>
+        </View>
+      </Modal.Container>
+    </Modal>
+  );
+}
+
+function SolScreen() {
   const [solKeyPair, setSolKeyPair] = useState();
-  const [ethWallet, setEthWallet] = useState();
+  const [solSignature, setSolSignature] = useState();
+  const [solReadableMessage, setSolReadableMessage] = useState();
+  const [solSignMessagePopup, setSolSignMessagePopup] = useState(false);
+  const [solSiwsMessage, setSolSiwsMessage] = useState();
   const [logs, setLogs] = useState([]);
 
   const getSolKey = () => {
@@ -292,7 +361,7 @@ function SolEthKeyScreen() {
 
       let sk = Keypair.fromSecretKey(key.sk);
       setSolKeyPair(sk);
-      addLog(`pubKey ${sk.publicKey}`);
+      addLog(`pubKey ${sk.publicKey.toString()}`);
       addLog(`sk ${base58.encode(sk.secretKey)}`);
     } catch (err) {
       addLog({ err });
@@ -312,6 +381,107 @@ function SolEthKeyScreen() {
     }
   };
 
+  const createSolanaMessage = (address, statement) => {
+    try {
+      const payload = new SIWPayload();
+      payload.domain = "www.torus.com";
+      payload.uri = "https://react-native-example.com";
+      payload.address = address;
+      payload.statement = statement;
+      payload.version = "1";
+      payload.chainId = 1;
+  
+      const header = { t : "sip99" };
+      const network = "solana";
+      let message = new SIWWeb3({ header, payload, network });
+      setSolSiwsMessage(message);
+      addLog({ message });
+
+      return message.prepareMessage();
+    } catch (err) {}
+  };
+
+  const signMessageWithSol = () => {
+    try {
+      const message = createSolanaMessage(
+        solKeyPair.publicKey.toString(),
+        "Sign in with Solana to the app."
+      );
+      console.log({ message });
+
+      setSolReadableMessage(message);
+      setSolSignMessagePopup(true);
+    } catch (err) {
+      addLog({ err });
+    }
+  };
+
+  const confirmSignatureSol = (isCloseFlag = true) => {
+
+    if(!isCloseFlag) {
+      return setSolSignMessagePopup(false);
+    }
+    const encodedMessage = Buffer.from(solReadableMessage, "utf-8");
+    const signedMessage = sign.detached(encodedMessage, solKeyPair.secretKey);
+    addLog({ signedMessage });
+    setSolSignature(signedMessage);
+    setSolSignMessagePopup(false);
+  }
+
+  const verifySolMessage = async() => {
+    try {
+      const signature = {
+        t: "sip99",
+        s: base58.encode(solSignature)
+      } 
+      const payload = solSiwsMessage.payload;
+      const resp = await solSiwsMessage.verify(payload, signature);
+      addLog('success verifying sol signature', resp);
+    } catch (err) {
+      addLog('error while verifying sol signature', err);
+    }
+  };
+
+  const addLog = useCallback((log) => {
+    setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
+  }, []);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#17171D" }}>
+      <Button title="Get sol key" onPress={getSolKey}></Button>
+      {/* <Button title="Sign Message Sol" onPress={signMessageSol}></Button> */}
+      <Button title="Sign Message Sol" onPress={signMessageWithSol}></Button>
+      <Button title="Verify Sol Message" onPress={verifySolMessage}></Button>
+      <ConfirmModal
+        message={solReadableMessage}
+        visible={solSignMessagePopup}
+        handleSign={confirmSignatureSol}
+      />
+      {logs.map((log, i) => (
+        <Text
+          key={`t-${i}`}
+          style={{
+            fontFamily: Platform.OS === "ios" ? "Courier New" : "monospace",
+            color: "#fff",
+            fontSize: 14,
+          }}
+        >
+          {log}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
+function EthScreen() {
+  const web3 = new Web3();
+  const [signatureEth, setSignatureEth] = useState();
+  const [ethWallet, setEthWallet] = useState();
+  const [ethReadableMessage, setEthReadableMessage] = useState();
+  const [ethSignMessagePopup, setEthSignMessagePopup] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [siwsMessage, setSiwsMessage] = useState();
+
   const createEthWallet = () => {
     try {
       let pKey = tKey.privKey.toString("hex");
@@ -325,17 +495,72 @@ function SolEthKeyScreen() {
     }
   };
 
-  const signEthMessage = () => {
+  const createEthMessage = (address, statement) => {
+    const payload = new SIWPayload();
+        payload.domain = "www.torus.com";
+        payload.uri = "https://react-native-example.com";
+        payload.address = address;
+        payload.statement = statement;
+        payload.version = "1";
+        payload.chainId = 1;
+        const header = {
+          t : "eip191"
+        };
+        const network = "ethereum"
+        let message = new SIWWeb3({ header, payload ,network});
+        // we need the nonce for verification so getting it in a global variable
+        setSiwsMessage(message);
+        const messageText = message.prepareMessage();
+        return messageText;
+  }
+
+  const signMessageWithEth = () => {
     try {
-      const signMessage = web3.eth.accounts.sign(
-        "hello world",
-        ethWallet.privateKey
+      const message = createEthMessage(
+        ethWallet.address,
+        "Sign in with Ethereum to the app."
       );
-      addLog({ signMessage });
+      addLog({ message });
+
+      setEthReadableMessage(message);
+      setEthSignMessagePopup(true);
     } catch (err) {
-      addLog("Check if eth wallet and tkey has been generated", err);
+      addLog({ err });
     }
   };
+
+  const confirmSignatureEth = (isCloseFlag = true) => {
+    if(!isCloseFlag) {
+      return setEthSignMessagePopup(false);
+    }
+    try {
+      const signatureEth = web3.eth.personal.sign(
+        ethReadableMessage,
+        ethWallet.address
+      );
+      addLog({ signatureEth });
+      setSignatureEth(signatureEth);
+      setEthSignMessagePopup(false);
+    } catch (err) {
+      addLog("Check if eth wallet and tkey has been generated", err);
+      setEthSignMessagePopup(false);
+    }
+  };
+
+  const verifyEthMessage = async () => {
+    try {
+      const signature = {
+        t: "eip191",
+        s: signatureEth
+      } 
+      const payload = siwsMessage.payload;
+      const resp = await siwsMessage.verify(payload, signature);
+      addLog("success verifying eth message", resp)
+    } catch(err) {
+      addLog("error while verifying eth message", err)
+    }
+       
+  }
 
   const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
@@ -343,11 +568,14 @@ function SolEthKeyScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <Button title="Get sol key" onPress={getSolKey}></Button>
-      <Button title="Sign Message Sol" onPress={signMessageSol}></Button>
       <Button title="Create EthWallet" onPress={createEthWallet}></Button>
-      <Button title="Sign EthMessage" onPress={signEthMessage}></Button>
-
+      <Button title="Sign Message with Eth" onPress={signMessageWithEth}></Button>
+      <Button title="Verify Eth Message" onPress={verifyEthMessage}></Button>
+      <ConfirmModal
+        message={ethReadableMessage}
+        visible={ethSignMessagePopup}
+        handleSign={confirmSignatureEth}
+      />
       {logs.map((log, i) => (
         <Text
           key={`t-${i}`}
@@ -494,7 +722,8 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="home" component={HomeScreen} />
         <Stack.Screen name="ecdh" component={EcdhScreen} />
-        <Stack.Screen name="SolEthKey" component={SolEthKeyScreen} />
+        <Stack.Screen name="Sol Screen" component={SolScreen} />
+        <Stack.Screen name="Eth Screen" component={EthScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
