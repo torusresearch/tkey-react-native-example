@@ -27,6 +27,7 @@ import crypto from "crypto-browserify";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onOpen, Picker } from "react-native-actions-sheet-picker";
+import { TextEncoder } from "text-encoding";
 import { Modal } from "./modal";
 import { Payload as SIWPayload, SIWWeb3 } from '@web3auth/sign-in-with-web3';
 
@@ -347,6 +348,7 @@ function ConfirmModal({ visible, message, handleSign }) {
 function SolScreen() {
   const [solKeyPair, setSolKeyPair] = useState();
   const [solSignature, setSolSignature] = useState();
+  const [solMessage, setSolMessage] = useState();
   const [solReadableMessage, setSolReadableMessage] = useState();
   const [solSignMessagePopup, setSolSignMessagePopup] = useState(false);
   const [solSiwsMessage, setSolSiwsMessage] = useState();
@@ -421,7 +423,9 @@ function SolScreen() {
     if(!isCloseFlag) {
       return setSolSignMessagePopup(false);
     }
+    const encodedMessage_array = new TextEncoder().encode(solReadableMessage);
     const encodedMessage = Buffer.from(solReadableMessage, "utf-8");
+    setSolMessage(encodedMessage_array);
     const signedMessage = sign.detached(encodedMessage, solKeyPair.secretKey);
     addLog({ signedMessage });
     setSolSignature(signedMessage);
@@ -438,7 +442,7 @@ function SolScreen() {
       const resp = await solSiwsMessage.verify(payload, signature);
       addLog('success verifying sol signature', resp);
     } catch (err) {
-      addLog('error while verifying sol signature', err);
+      addLog('error verifying sol signature', err );
     }
   };
 
