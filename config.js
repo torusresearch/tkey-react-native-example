@@ -18,13 +18,34 @@ export const verifierMap = {
   [GOOGLE]: {
     name: "Google",
     typeOfLogin: "google",
-    clientId: "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
+    clientId:
+      "221898609709-obfn3p63741l5333093430j3qeiinaa8.apps.googleusercontent.com",
     verifier: "google-lrc",
   },
-  [FACEBOOK]: { name: "Facebook", typeOfLogin: "facebook", clientId: "617201755556395", verifier: "facebook-lrc" },
-  [REDDIT]: { name: "Reddit", typeOfLogin: "reddit", clientId: "YNsv1YtA_o66fA", verifier: "torus-reddit-test" },
-  [TWITCH]: { name: "Twitch", typeOfLogin: "twitch", clientId: "f5and8beke76mzutmics0zu4gw10dj", verifier: "twitch-lrc" },
-  [DISCORD]: { name: "Discord", typeOfLogin: "discord", clientId: "682533837464666198", verifier: "discord-lrc" },
+  [FACEBOOK]: {
+    name: "Facebook",
+    typeOfLogin: "facebook",
+    clientId: "617201755556395",
+    verifier: "facebook-lrc",
+  },
+  [REDDIT]: {
+    name: "Reddit",
+    typeOfLogin: "reddit",
+    clientId: "YNsv1YtA_o66fA",
+    verifier: "torus-reddit-test",
+  },
+  [TWITCH]: {
+    name: "Twitch",
+    typeOfLogin: "twitch",
+    clientId: "f5and8beke76mzutmics0zu4gw10dj",
+    verifier: "twitch-lrc",
+  },
+  [DISCORD]: {
+    name: "Discord",
+    typeOfLogin: "discord",
+    clientId: "682533837464666198",
+    verifier: "discord-lrc",
+  },
   [EMAIL_PASSWORD]: {
     name: "Email Password",
     typeOfLogin: "email_password",
@@ -112,4 +133,4 @@ export const verifierMap2 = {
       domain: AUTH_DOMAIN,
     },
   },
-}
+};

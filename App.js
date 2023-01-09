@@ -29,7 +29,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { onOpen, Picker } from "react-native-actions-sheet-picker";
 import { TextEncoder } from "text-encoding";
 import { Modal } from "./modal";
-import { Payload as SIWPayload, SIWWeb3 } from '@web3auth/sign-in-with-web3';
+import { Payload as SIWPayload, SIWWeb3 } from "@web3auth/sign-in-with-web3";
+import { Buffer } from "buffer";
 
 const GOOGLE = "google";
 const verifierMap = {
@@ -63,9 +64,10 @@ const tKey = new ThresholdKey({
 
 function HomeScreen({ navigation }) {
   const [logs, setLogs] = useState([]);
-  const [authVerifier, setAuthVerifier] = useState("google");
+  const [authVerifier] = useState("google");
   const [shareDetails, setShareDetails] = useState("0x0");
-  const [postboxKey, setPostboxKey] = useState("");
+  // eslint-disable-next-line no-unused-vars
+  const [_postboxKey, setPostboxKey] = useState("");
   const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
   }, []);
@@ -81,7 +83,7 @@ function HomeScreen({ navigation }) {
     };
     init();
     try {
-      const result = CustomAuth.init({
+      CustomAuth.init({
         browserRedirectUri: "https://scripts.toruswallet.io/redirect.html",
         redirectUri: "torusapp://org.torusresearch.customauthexample/redirect",
         network: "testnet", // details for test net
@@ -91,7 +93,7 @@ function HomeScreen({ navigation }) {
     } catch (error) {
       addLog(error, "mounted caught");
     }
-  }, []);
+  });
 
   const initializetKey = async () => {
     try {
@@ -232,38 +234,29 @@ function HomeScreen({ navigation }) {
           }}
           style={{ flex: 1 }}
         >
-          <Button title="Create new Tkey" onPress={createTkey}></Button>
-          <Button title="Request new Share" onPress={requestShare}></Button>
-          <Button
-            title="Check Share Request"
-            onPress={checkShareRequests}
-          ></Button>
-          <Button
-            title="Approve Share Request"
-            onPress={approveShareRequest}
-          ></Button>
-          <Button
-            title="Reconstruct private key"
-            onPress={reconstructKey}
-          ></Button>
-          <Button title="Delete Share" onPress={deleteShares}></Button>
-          <Button title="Get Tkey Details" onPress={getTKeyDetails}></Button>
-          <Button title="Generate Shares" onPress={generateShares}></Button>
+          <Button title="Create new Tkey" onPress={createTkey} />
+          <Button title="Request new Share" onPress={requestShare} />
+          <Button title="Check Share Request" onPress={checkShareRequests} />
+          <Button title="Approve Share Request" onPress={approveShareRequest} />
+          <Button title="Reconstruct private key" onPress={reconstructKey} />
+          <Button title="Delete Share" onPress={deleteShares} />
+          <Button title="Get Tkey Details" onPress={getTKeyDetails} />
+          <Button title="Generate Shares" onPress={generateShares} />
 
           <Button
             title="Sol Screen"
             onPress={() => navigation.navigate("Sol Screen")}
-          ></Button>
+          />
           <Button
             title="Eth Screen"
             onPress={() => navigation.navigate("Eth Screen")}
-          ></Button>
+          />
           <Button
             title="ECDH Screen"
             onPress={() => navigation.navigate("ecdh")}
-          ></Button>
+          />
 
-          <Button title="Login" onPress={login}></Button>
+          <Button title="Login" onPress={login} />
 
           {logs.map((log, i) => (
             <Text
@@ -329,9 +322,7 @@ function ConfirmModal({ visible, message, handleSign }) {
         <View style={styles.modal}>
           <Modal.Header title="Signing Message" />
           <Modal.Body>
-            <Text style={styles.text}>
-              {message}
-            </Text>
+            <Text style={styles.text}>{message}</Text>
           </Modal.Body>
           <Modal.Footer>
             <View style={styles.button}>
@@ -348,6 +339,7 @@ function ConfirmModal({ visible, message, handleSign }) {
 function SolScreen() {
   const [solKeyPair, setSolKeyPair] = useState();
   const [solSignature, setSolSignature] = useState();
+  // eslint-disable-next-line no-unused-vars
   const [solMessage, setSolMessage] = useState();
   const [solReadableMessage, setSolReadableMessage] = useState();
   const [solSignMessagePopup, setSolSignMessagePopup] = useState(false);
@@ -370,19 +362,6 @@ function SolScreen() {
     }
   };
 
-  const signMessageSol = () => {
-    try {
-      const signedMessage = sign.detached(
-        Buffer.from("test", "utf-8"),
-        solKeyPair.secretKey
-      );
-      const signedHex = Buffer.from(signedMessage).toString("hex");
-      addLog({ signedHex });
-    } catch (err) {
-      addLog("Check if sol and tkey has been generated", err);
-    }
-  };
-
   const createSolanaMessage = (address, statement) => {
     try {
       const payload = new SIWPayload();
@@ -392,15 +371,17 @@ function SolScreen() {
       payload.statement = statement;
       payload.version = "1";
       payload.chainId = 1;
-  
-      const header = { t : "sip99" };
+
+      const header = { t: "sip99" };
       const network = "solana";
       let message = new SIWWeb3({ header, payload, network });
       setSolSiwsMessage(message);
       addLog({ message });
 
       return message.prepareMessage();
-    } catch (err) {}
+    } catch (err) {
+      addLog("error creating solana message", err);
+    }
   };
 
   const signMessageWithSol = () => {
@@ -419,8 +400,7 @@ function SolScreen() {
   };
 
   const confirmSignatureSol = (isCloseFlag = true) => {
-
-    if(!isCloseFlag) {
+    if (!isCloseFlag) {
       return setSolSignMessagePopup(false);
     }
     const encodedMessage_array = new TextEncoder().encode(solReadableMessage);
@@ -430,19 +410,19 @@ function SolScreen() {
     addLog({ signedMessage });
     setSolSignature(signedMessage);
     setSolSignMessagePopup(false);
-  }
+  };
 
-  const verifySolMessage = async() => {
+  const verifySolMessage = async () => {
     try {
       const signature = {
         t: "sip99",
-        s: base58.encode(solSignature)
-      } 
+        s: base58.encode(solSignature),
+      };
       const payload = solSiwsMessage.payload;
       const resp = await solSiwsMessage.verify(payload, signature);
-      addLog('success verifying sol signature', resp);
+      addLog("success verifying sol signature", resp);
     } catch (err) {
-      addLog('error verifying sol signature', err );
+      addLog("error verifying sol signature", err);
     }
   };
 
@@ -452,10 +432,10 @@ function SolScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <Button title="Get sol key" onPress={getSolKey}></Button>
+      <Button title="Get sol key" onPress={getSolKey} />
       {/* <Button title="Sign Message Sol" onPress={signMessageSol}></Button> */}
-      <Button title="Sign Message Sol" onPress={signMessageWithSol}></Button>
-      <Button title="Verify Sol Message" onPress={verifySolMessage}></Button>
+      <Button title="Sign Message Sol" onPress={signMessageWithSol} />
+      <Button title="Verify Sol Message" onPress={verifySolMessage} />
       <ConfirmModal
         message={solReadableMessage}
         visible={solSignMessagePopup}
@@ -501,22 +481,22 @@ function EthScreen() {
 
   const createEthMessage = (address, statement) => {
     const payload = new SIWPayload();
-        payload.domain = "www.torus.com";
-        payload.uri = "https://react-native-example.com";
-        payload.address = address;
-        payload.statement = statement;
-        payload.version = "1";
-        payload.chainId = 1;
-        const header = {
-          t : "eip191"
-        };
-        const network = "ethereum"
-        let message = new SIWWeb3({ header, payload ,network});
-        // we need the nonce for verification so getting it in a global variable
-        setSiwsMessage(message);
-        const messageText = message.prepareMessage();
-        return messageText;
-  }
+    payload.domain = "www.torus.com";
+    payload.uri = "https://react-native-example.com";
+    payload.address = address;
+    payload.statement = statement;
+    payload.version = "1";
+    payload.chainId = 1;
+    const header = {
+      t: "eip191",
+    };
+    const network = "ethereum";
+    let message = new SIWWeb3({ header, payload, network });
+    // we need the nonce for verification so getting it in a global variable
+    setSiwsMessage(message);
+    const messageText = message.prepareMessage();
+    return messageText;
+  };
 
   const signMessageWithEth = () => {
     try {
@@ -534,7 +514,7 @@ function EthScreen() {
   };
 
   const confirmSignatureEth = (isCloseFlag = true) => {
-    if(!isCloseFlag) {
+    if (!isCloseFlag) {
       return setEthSignMessagePopup(false);
     }
     try {
@@ -555,16 +535,15 @@ function EthScreen() {
     try {
       const signature = {
         t: "eip191",
-        s: signatureEth
-      } 
+        s: signatureEth,
+      };
       const payload = siwsMessage.payload;
       const resp = await siwsMessage.verify(payload, signature);
-      addLog("success verifying eth message", resp)
-    } catch(err) {
-      addLog("error while verifying eth message", err)
+      addLog("success verifying eth message", resp);
+    } catch (err) {
+      addLog("error while verifying eth message", err);
     }
-       
-  }
+  };
 
   const addLog = useCallback((log) => {
     setLogs((logs) => [">" + JSON.stringify(log), ...logs]);
@@ -572,9 +551,9 @@ function EthScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#17171D" }}>
-      <Button title="Create EthWallet" onPress={createEthWallet}></Button>
-      <Button title="Sign Message with Eth" onPress={signMessageWithEth}></Button>
-      <Button title="Verify Eth Message" onPress={verifyEthMessage}></Button>
+      <Button title="Create EthWallet" onPress={createEthWallet} />
+      <Button title="Sign Message with Eth" onPress={signMessageWithEth} />
+      <Button title="Verify Eth Message" onPress={verifyEthMessage} />
       <ConfirmModal
         message={ethReadableMessage}
         visible={ethSignMessagePopup}
@@ -601,6 +580,7 @@ function EcdhScreen() {
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState("");
   const [query, setQuery] = useState("");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const countries = [{ name: "secp256k1" }, { name: "ed25519" }];
   const styles = StyleSheet.create({
     container: {
@@ -616,7 +596,7 @@ function EcdhScreen() {
   });
   useEffect(() => {
     setData(countries);
-  }, []);
+  }, [countries]);
 
   /*
    **Example filter function
@@ -700,7 +680,7 @@ function EcdhScreen() {
         }}
         onSearch={onSearch}
       />
-      <Button title="trigger ECDH Functions" onPress={ecdh}></Button>
+      <Button title="trigger ECDH Functions" onPress={ecdh} />
 
       {logs.map((log, i) => (
         <Text

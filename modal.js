@@ -1,12 +1,8 @@
 import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import RNModal from "react-native-modal";
 
-export const Modal = ({
-  isVisible = false,
-  children,
-  ...props
-}) => {
+export const Modal = ({ isVisible = false, children, ...props }) => {
   return (
     <RNModal
       isVisible={isVisible}
@@ -14,7 +10,8 @@ export const Modal = ({
       animationOutTiming={1000}
       backdropTransitionInTiming={800}
       backdropTransitionOutTiming={800}
-      {...props}>
+      {...props}
+    >
       {children}
     </RNModal>
   );
@@ -30,9 +27,7 @@ const ModalHeader = ({ title }) => (
   </View>
 );
 
-const ModalBody = ({ children }) => (
-  <View style={styles.body}>{children}</View>
-);
+const ModalBody = ({ children }) => <View style={styles.body}>{children}</View>;
 
 const ModalFooter = ({ children }) => (
   <View style={styles.footer}>{children}</View>

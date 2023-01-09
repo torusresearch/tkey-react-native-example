@@ -1,26 +1,28 @@
-const { getDefaultConfig } = require('metro-config')
-const nodeLibs = require('node-libs-react-native')
+const { getDefaultConfig } = require("metro-config");
+const nodeLibs = require("node-libs-react-native");
 
 module.exports = (async () => {
   const {
     resolver: { sourceExts, assetExts },
-  } = await getDefaultConfig()
+  } = await getDefaultConfig();
 
-  const defaultSourceExts = [...sourceExts, 'svg', 'mjs', 'cjs']
+  const defaultSourceExts = [...sourceExts, "svg", "mjs", "cjs"];
 
   return {
     resolver: {
       extraNodeModules: {
         ...nodeLibs,
-        crypto: require.resolve('crypto-browserify'),
+        crypto: require.resolve("crypto-browserify"),
       },
 
-      assetExts: assetExts.filter(ext => ext !== 'svg'),
+      assetExts: assetExts.filter((ext) => ext !== "svg"),
 
-      sourceExts: process.env.TEST_REACT_NATIVE ? ['e2e.js'].concat(defaultSourceExts) : defaultSourceExts,
+      sourceExts: process.env.TEST_REACT_NATIVE
+        ? ["e2e.js"].concat(defaultSourceExts)
+        : defaultSourceExts,
     },
     transformer: {
-      assetPlugins: ['expo-asset/tools/hashAssetFiles'],
+      assetPlugins: ["expo-asset/tools/hashAssetFiles"],
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
@@ -28,5 +30,5 @@ module.exports = (async () => {
         },
       }),
     },
-  }
-})()
+  };
+})();
